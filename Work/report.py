@@ -76,4 +76,3 @@ print(('-' * 10 + ' ') * len(headers))
 for r in report:
     price = "${:.2f}".format(r[2])
     print('{:>10s} {:>10d} {:>10s} {:>10.2f}'.format(r[0], r[1], price, r[3]))
-    #print('%10s %10d %10.2f %10.2f' % r)
