@@ -5,41 +5,21 @@
 import csv
 import sys
 from pprint import pprint
+from fileparse import parse_csv
 
 def read_portfolio(filename):
     '''
     Read a stock portfolio file into a list of dictionaries with keys
     name, shares, and price.
     '''
-    portfolio = []
-    with open(filename) as f:
-        rows = csv.reader(f)
-        headers = next(rows)
-
-        for row in rows:
-            record = dict(zip(headers, row))
-            stock = {
-                 'name': record['name'],
-                 'shares': int(record['shares']),
-                 'price': float(record['price'])
-            }
-            portfolio.append(stock)
-
+    portfolio = parse_csv(filename, select=["name", "shares", "price"], types=[str, int, float])
     return portfolio
 
 def read_prices(filename):
     '''
     Read a CSV file of price data into a dict mapping names to prices.
     '''
-    prices = {}
-    with open(filename) as f:
-        rows = csv.reader(f)
-        for row in rows:
-            try:
-                prices[row[0]] = float(row[1])
-            except IndexError:
-                pass
-
+    prices = dict(parse_csv(filename, types=[str, float], has_headers=False))
     return prices
 
 
@@ -79,9 +59,14 @@ def portfolio_report(portfolio_filename, prices_filename):
     report = make_report(portfolio, prices)
     print_report(report)
 
+def main(args):
+    if len(args) != 3:
+        raise SystemExit('Usage: %s portfile pricefile' % args[0])
+    # Calling the functions
+    portfolio_report(args[1], args[2])
 
-# Calling the functions
-portfolio_report("Data/portfolio.csv", "Data/prices.csv")
+if __name__ == "__main__":
+    main(sys.argv)
 
 
 # Calculate the total cost of the portfolio
