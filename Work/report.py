@@ -79,6 +79,7 @@ def portfolio_report(portfolio_filename, prices_filename):
     report = make_report(portfolio, prices)
     print_report(report)
 
+
 # Calling the functions
 portfolio_report("Data/portfolio.csv", "Data/prices.csv")
 
