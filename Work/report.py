@@ -4,8 +4,15 @@
 
 import csv
 import sys
+import stock
 from pprint import pprint
 from fileparse import parse_csv
+
+# Once you have done that, fix all of the code in report.py and pcost.py so that it works with 
+# Stock instances instead of dictionaries.
+
+# Hint: You should not have to make major changes to the code. 
+# You will mainly be changing dictionary access such as s['shares'] into s.shares.
 
 def read_portfolio(filename):
     '''
@@ -13,7 +20,8 @@ def read_portfolio(filename):
     name, shares, and price.
     '''
     with open(filename) as file:
-        portfolio = parse_csv(file, select=["name", "shares", "price"], types=[str, int, float])
+        pf_dict = parse_csv(file, select=["name", "shares", "price"], types=[str, int, float])
+        portfolio = [stock.Stock(pf['name'], pf['shares'], pf['price']) for pf in pf_dict]
     return portfolio
 
 def read_prices(filename):
@@ -32,9 +40,9 @@ def make_report(portfolio, prices):
     '''
     report = []
     for pf in portfolio:
-        current_price = prices[pf["name"]]
-        change = current_price - pf["price"]
-        summary = (pf["name"], pf["shares"], current_price, change)
+        current_price = prices[pf.name]
+        change = current_price - pf.price
+        summary = (pf.name, pf.shares, current_price, change)
         report.append(summary)
     return report
 
