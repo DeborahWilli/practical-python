@@ -5,6 +5,7 @@
 import csv
 import sys
 import stock
+import tableformat
 from pprint import pprint
 from fileparse import parse_csv
 
@@ -47,33 +48,36 @@ def make_report(portfolio, prices):
     return report
 
 
-def print_report(report):
+def print_report(reportdata, formatter):
     """
-    Print the formatted output of the report
+    Print a nicely formated table from a list of (name, shares, price, change) tuples.
     """
-    headers = ("Name", "Shares", "Price", "Change")
-    print('{name:>10s} {shares:>10s} {price:>10s} {change:>10s}'.format(
-        name=headers[0], shares=headers[1], price=headers[2], change=headers[3]))
-    print(('-' * 10 + ' ') * len(headers))
-    for r in report:
-        price = "${:.2f}".format(r[2])
-        print('{:>10s} {:>10d} {:>10s} {:>10.2f}'.format(r[0], r[1], price, r[3]))
+    formatter.headings(['Name','Shares','Price','Change'])
+    for name, shares, price, change in reportdata:
+        rowdata = [name, str(shares), f'{price:0.2f}', f'{change:0.2f}' ]
+        formatter.row(rowdata)
 
-def portfolio_report(portfolio_filename, prices_filename):
+
+def portfolio_report(portfoliofile, pricefile, fmt='txt'):
     """
-    Read in the desired portfolio and prices data, create a report afterwards and 
-    eventually print the report.
+    Make a stock report given portfolio and price data files.
     """
-    portfolio = read_portfolio(portfolio_filename)
-    prices = read_prices(prices_filename)
+    # Read data files
+    portfolio = read_portfolio(portfoliofile)
+    prices = read_prices(pricefile)
+
+    # Create the report data
     report = make_report(portfolio, prices)
-    print_report(report)
+
+    formatter = tableformat.create_formatter(fmt)
+    print_report(report, formatter)
+
 
 def main(args):
-    if len(args) != 3:
-        raise SystemExit('Usage: %s portfile pricefile' % args[0])
-    # Calling the functions
-    portfolio_report(args[1], args[2])
+    if len(args) != 4:
+        raise SystemExit('Usage: %s portfile pricefile format' % args[0])
+    portfolio_report(args[1], args[2], args[3])
+
 
 if __name__ == "__main__":
     main(sys.argv)
